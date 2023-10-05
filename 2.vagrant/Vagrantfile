@@ -1,0 +1,21 @@
+Vagrant.configure("2") do |config|  
+
+  NodeCount = 1
+  (1..NodeCount).each do |i|    
+    config.vm.define "vagrant_#{i+1}" do |vg|
+      vg.vm.box = "generic/oracle8"
+      #vg.vbguest.auto_update = false      
+      vg.vm.network "forwarded_port", guest: 80, host: 8080, host_ip: "127.0.0.1"  
+      vg.vm.network "private_network", ip: "192.168.33.10"
+      vg.vm.synced_folder ".", "/vagrant", type: "nfs", nfs_version: 4, nfs_udp: false
+      vg.vm.hostname = "vagrant"
+      #vg.vm.provision "shell", path: "provision.sh"    
+      vg.vm.provider "virtualbox" do |vb|    
+      vgpus = "4"      
+        vb.memory = "1024"
+        vb.name = "vagrant"
+        vb.customize ["modifyvm", :id, "--groups", "/DevOps-vagrant"]
+      end  
+    end
+  end
+end
